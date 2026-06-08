@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAY NO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grain"></div>
+
+<!-- LANDING SCREEN -->
+<div id="screen-landing" class="screen active">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+  <div class="landing-content">
+    <div class="title-block">
+      <div class="title-sub">CHALLENGE</div>
+      <div class="title-main">SAY<br>NO</div>
+      <div class="title-x">✕</div>
+    </div>
+    <div class="rules">
+      <div class="rules-title">HOW TO PLAY</div>
+      <ul>
+        <li>Cross both arms into an <strong>X</strong> in front of the camera</li>
+        <li>Each valid <strong>X</strong> gesture = <strong>1 point</strong></li>
+        <li>You have <strong>20 seconds</strong></li>
+        <li>Score as many X's as you can</li>
+      </ul>
+    </div>
+    <button class="btn-start" id="btn-start">
+      <span class="btn-bracket">[</span>
+      START
+      <span class="btn-bracket">]</span>
+    </button>
+    <div class="privacy-note">Camera runs locally — nothing is uploaded or stored</div>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="screen-game" class="screen">
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas"></canvas>
+
+  <!-- Detection overlay (stage 1) -->
+  <div id="detection-overlay" class="detection-overlay hidden">
+    <div class="detection-box">
+      <div class="detection-status-row">
+        <div class="det-dot" id="det-dot"></div>
+        <div class="det-label" id="det-label">DETECTING YOU...</div>
+      </div>
+      <div class="det-ready" id="det-ready"></div>
+      <button class="btn-begin hidden" id="btn-begin">
+        <span class="btn-bracket">[</span>
+        BEGIN
+        <span class="btn-bracket">]</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Countdown overlay -->
+  <div id="countdown-overlay" class="countdown-overlay hidden">
+    <div id="countdown-number" class="countdown-number">3</div>
+  </div>
+
+  <!-- HUD: timer top-left, score top-center -->
+  <div id="hud" class="hud hidden">
+    <div class="hud-timer">
+      <div class="hud-label">TIME</div>
+      <div class="hud-value" id="hud-time">20</div>
+    </div>
+    <div class="hud-score-block">
+      <div class="hud-label">SCORE</div>
+      <div class="hud-value hud-score-val" id="hud-score">0</div>
+    </div>
+    <div class="hud-spacer"></div>
+  </div>
+
+  <!-- X flash feedback -->
+  <div id="x-flash" class="x-flash hidden">✕</div>
+
+  <!-- Error overlay -->
+  <div id="error-overlay" class="error-overlay hidden">
+    <div class="error-box">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+      <div class="error-icon">!</div>
+      <div class="error-title">CAMERA ERROR</div>
+      <div class="error-msg" id="error-msg">Could not load pose detection.</div>
+      <button class="btn-retry" id="btn-retry">[ RETRY ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="screen-result" class="screen">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+  <div class="result-content">
+    <div class="result-title">GAME OVER</div>
+    <div class="result-score-block">
+      <div class="result-label">FINAL SCORE</div>
+      <div class="result-score" id="result-score">0</div>
+    </div>
+    <div class="result-xcount-block">
+      <span class="result-x-sym">✕</span>
+      <span class="result-xcount" id="result-xcount">0</span>
+      <span class="result-x-label">X GESTURES</span>
+    </div>
+    <div class="result-message" id="result-message">Keep practicing!</div>
+    <div class="result-buttons">
+      <button class="btn-share" id="btn-share">
+        <span class="btn-bracket">[</span>
+        SHARE
+        <span class="btn-bracket">]</span>
+      </button>
+      <button class="btn-play-again" id="btn-play-again">
+        <span class="btn-bracket">[</span>
+        PLAY AGAIN
+        <span class="btn-bracket">]</span>
+      </button>
+    </div>
+    <div class="share-confirm hidden" id="share-confirm">Copied to clipboard!</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.js" crossorigin="anonymous"></script>
+<script src="game.js"></script>
+</body>
+</html>
