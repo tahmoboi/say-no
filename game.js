@@ -363,6 +363,15 @@ document.getElementById('btn-play-again').addEventListener('click', async () => 
   startGame();
 });
 
+// ─── HOME ───
+document.getElementById('btn-home').addEventListener('click', () => {
+  gameActive = false;
+  clearInterval(gameTimer);
+  if (camera) { camera.stop(); camera = null; }
+  detectingForUser = false;
+  showScreen('landing');
+});
+
 // ─── RETRY ───
 document.getElementById('btn-retry').addEventListener('click', () => {
   errorOverlay.classList.add('hidden');
