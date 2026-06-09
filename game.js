@@ -28,6 +28,7 @@ const resultScore      = document.getElementById('result-score');
 const resultCount      = document.getElementById('result-xcount');
 const resultMsg        = document.getElementById('result-message');
 const shareConfirm     = document.getElementById('share-confirm');
+const btnQuit          = document.getElementById('btn-quit');
 
 let poseModel       = null;
 let camera          = null;
@@ -86,13 +87,8 @@ function setDetectedUI() {
 function checkForUser(results) {
   if (!detectingForUser) return;
   if (!results.poseLandmarks) return;
-  const lw = results.poseLandmarks[15];
-  const rw = results.poseLandmarks[16];
-  if (!lw || !rw) return;
-  if ((lw.visibility ?? 0) >= 0.6 && (rw.visibility ?? 0) >= 0.6) {
-    detectingForUser = false;
-    setDetectedUI();
-  }
+  detectingForUser = false;
+  setDetectedUI();
 }
 
 // ─── GESTURE DETECTION ───
@@ -190,11 +186,11 @@ function initPose() {
         `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${file}`,
     });
     poseModel.setOptions({
-      modelComplexity:        1,
+      modelComplexity:        0,
       smoothLandmarks:        true,
       enableSegmentation:     false,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence:  0.5,
+      minDetectionConfidence: 0.4,
+      minTrackingConfidence:  0.4,
     });
     poseModel.onResults((results) => {
       drawPose(results);
@@ -203,6 +199,20 @@ function initPose() {
     });
     poseModel.initialize().then(resolve).catch(reject);
   });
+}
+
+// ─── POSE WARMUP ───
+let poseReady       = false;
+let poseInitPromise = null;
+
+function ensurePose() {
+  if (poseReady) return Promise.resolve();
+  if (!poseInitPromise) {
+    poseInitPromise = initPose()
+      .then(() => { poseReady = true; })
+      .catch((err) => { poseInitPromise = null; throw err; });
+  }
+  return poseInitPromise;
 }
 
 function waitForVideo() {
@@ -227,8 +237,8 @@ function initCamera() {
           // skip frames that fail silently
         }
       },
-      width:  1280,
-      height: 720,
+      width:  640,
+      height: 480,
     });
     camera.start().then(resolve).catch(reject);
   });
@@ -271,6 +281,7 @@ function startGame() {
   xFlash.classList.add('hidden');
   gameActive = true;
   hudEl.classList.remove('hidden');
+  btnQuit.classList.remove('hidden');
 
   gameTimer = setInterval(() => {
     timeLeft--;
@@ -285,6 +296,7 @@ function startGame() {
 
 function endGame() {
   gameActive = false;
+  btnQuit.classList.add('hidden');
   setTimeout(() => showResult(), 400);
 }
 
@@ -312,8 +324,8 @@ async function startDetectionPhase() {
   detectionOverlay.classList.remove('hidden');
   setDetectingUI();
   try {
-    if (!poseModel) await initPose();
-    if (!camera)    await initCamera();
+    await ensurePose();
+    if (!camera) await initCamera();
     await waitForVideo();
     detectingForUser = true;
   } catch (err) {
@@ -372,6 +384,17 @@ document.getElementById('btn-home').addEventListener('click', () => {
   showScreen('landing');
 });
 
+// ─── QUIT (mid-game) ───
+btnQuit.addEventListener('click', () => {
+  gameActive = false;
+  clearInterval(gameTimer);
+  if (camera) { camera.stop(); camera = null; }
+  detectingForUser = false;
+  btnQuit.classList.add('hidden');
+  hudEl.classList.add('hidden');
+  showScreen('landing');
+});
+
 // ─── RETRY ───
 document.getElementById('btn-retry').addEventListener('click', () => {
   errorOverlay.classList.add('hidden');
@@ -384,6 +407,9 @@ function showError(msg) {
   hudEl.classList.add('hidden');
   countdownEl.classList.add('hidden');
 }
+
+// Begin loading the pose model immediately so it's ready before the user clicks Start
+ensurePose().catch(() => {});
 
 // Keep canvas CSS size in sync with the screen
 function syncCanvasSize() {
