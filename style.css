@@ -212,7 +212,6 @@ html, body {
 .detection-overlay {
   position: absolute; inset: 0; z-index: 18;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0.55);
 }
 .detection-overlay.hidden { display: none; }
 
@@ -265,7 +264,6 @@ html, body {
 .countdown-overlay {
   position: absolute; inset: 0; z-index: 20;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0.5);
 }
 .countdown-overlay.hidden { display: none; }
 

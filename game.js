@@ -237,8 +237,8 @@ function initCamera() {
           // skip frames that fail silently
         }
       },
-      width:  640,
-      height: 480,
+      width:  { ideal: 1280 },
+      height: { ideal: 720 },
     });
     camera.start().then(resolve).catch(reject);
   });
