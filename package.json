@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "npx serve ."
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }
